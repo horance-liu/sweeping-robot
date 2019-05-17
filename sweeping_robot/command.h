@@ -16,6 +16,6 @@ Command backward(int n = 1);
 Command round();
 
 Command repeat(Command, int n);
-Command sequential(std::vector<Command>&& cmds);
+Command sequential(std::vector<Command> cmds);
 
 #endif

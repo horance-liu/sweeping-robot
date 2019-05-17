@@ -58,7 +58,7 @@ Command repeat(Command cmd, int n) {
   return sequential(std::vector<Command>(n, cmd));
 }
 
-Command sequential(std::vector<Command>&& cmds) {
+Command sequential(std::vector<Command> cmds) {
   return [cmds = std::move(cmds)](auto& from) {
     return cub::reduce(cmds, from, [](auto& pos, auto& cmd) {
       pos = cmd(pos);
