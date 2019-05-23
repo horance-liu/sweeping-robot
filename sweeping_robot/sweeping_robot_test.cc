@@ -184,7 +184,6 @@ FIXTURE(TextAlertTest) {
 
   DefaultRule rule{{
     new StayingListener(5, new TextOutput(ss)),
-    //new PathListener({{0, 1}, {0, 2}}, new JsonOutput(ss))
   }};
 
   SweepingRobot robot{rule};
