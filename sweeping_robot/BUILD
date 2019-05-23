@@ -1,26 +1,28 @@
+package(
+    default_visibility = [
+        "//sweeping_robot:internal"
+    ],
+)
+
 licenses(["notice"])  # Apache 2.0
-  
+
 exports_files(["LICENSE"])
+
+package_group(
+    name = "internal",
+    packages = [
+        "//sweeping_robot/...",
+    ],
+)
 
 cc_library(
     name = "sweeping_robot",
-    hdrs = [
-        "command.h",        
-        "direction.h",
-        "point.h",
-        "position.h",
-        "sweeping_robot.h",        
-    ],
-    srcs = [
-        "command.cc",
-        "direction.cc",
-        "point.cc",
-        "position.cc",
-        "sweeping_robot.cc",
-    ],
+    hdrs = ["sweeping_robot.h"],
+    srcs = ["sweeping_robot.cc"],
     deps = [
-        "@github_com_horanceliu_cub//cub/base:comparator",
-        "@github_com_horanceliu_cub//cub/algo:range",        
+        "//sweeping_robot/cmd",
+        "//sweeping_robot/rule",
+        "//sweeping_robot/core:position",
     ],
 )
 

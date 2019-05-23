@@ -7,7 +7,7 @@ struct Point;
 
 struct Direction {
   const Direction& turn(bool left) const;
-  Point move(const Point& from, int steps) const;
+  Point move(const Point& from, bool forward) const;
 
   static Direction E;
   static Direction S;

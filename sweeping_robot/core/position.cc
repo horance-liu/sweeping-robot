@@ -1,4 +1,4 @@
-#include "sweeping_robot/position.h"
+#include "sweeping_robot/core/position.h"
 
 Position::Position(int x, int y, const Direction& d)
   : Position(Point(x, y), d) {
@@ -12,8 +12,12 @@ Position Position::turn(bool left) const {
   return {point, direction.turn(left)};
 }
 
-Position Position::move(int steps) const {
-  return {direction.move(point, steps), direction};
+Position Position::move(bool forward) const {
+  return {direction.move(point, forward), direction};
+}
+
+const Point& Position::getPoint() const {
+  return point;
 }
 
 DEF_EQUALS(Position) {

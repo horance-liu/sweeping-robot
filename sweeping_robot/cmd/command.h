@@ -4,16 +4,20 @@
 #include <vector>
 #include <functional>
 
+struct Rule;
 struct Position;
 
-using Command = std::function<Position(const Position&)>;
+using Command = std::function<Position(const Position&, Rule&)>;
 
 Command left();
 Command right();
-
-Command forward(int n = 1);
-Command backward(int n = 1);
 Command round();
+
+Command forward();
+Command backward();
+
+Command forward(int n);
+Command backward(int n);
 
 Command repeat(Command, int n);
 Command sequential(std::vector<Command> cmds);
