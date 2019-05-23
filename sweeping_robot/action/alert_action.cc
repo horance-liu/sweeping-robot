@@ -14,7 +14,7 @@ void AlertAction::report(const Point& to) {
 }
 
 std::string AlertAction::text(const Point& to) const {
-  return std::string("Alert for passing ") + to.str() + "repeatly\n";
+  return std::string("Alert for passing ") + to.str() + " repeatly\n";
 }
 
 std::string AlertAction::desc() const {
