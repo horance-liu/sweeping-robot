@@ -6,13 +6,13 @@
 #include "sweeping_robot/rule/rule.h"
 
 struct SweepingRobot {
-  SweepingRobot(Rule& = Rule::nil());
+  SweepingRobot(const Rule& = Rule::nil());
 
   void exec(const Command&);
   const Position& position() const;
 
 private:
-  Rule& rule;
+  const Rule& rule;
   Position pos;
 };
 

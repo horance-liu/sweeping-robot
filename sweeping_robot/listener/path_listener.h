@@ -4,17 +4,18 @@
 #include "sweeping_robot/core/point.h"
 #include "sweeping_robot/listener/listener.h"
 #include "sweeping_robot/action/clean_action.h"
-#include <vector>
+#include <unordered_set>
 
 struct PathListener : Listener {
-  PathListener(std::vector<Point> points, Output* out);
+  using Points = std::unordered_set<Point>;
+  PathListener(Points points, Output* out);
 
 private:
   OVERRIDE(void onChanged(const Point&));
 
 private:
   CleanAction action;
-  std::vector<Point> points;
+  Points points;
 };
 
 #endif

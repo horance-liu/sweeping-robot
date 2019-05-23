@@ -1,6 +1,6 @@
 #include "sweeping_robot/listener/path_listener.h"
 
-PathListener::PathListener(std::vector<Point> points, Output* out)
+PathListener::PathListener(Points points, Output* out)
   : action(out), points(std::move(points)) {
 }
 

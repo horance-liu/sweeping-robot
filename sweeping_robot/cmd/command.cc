@@ -53,7 +53,7 @@ namespace {
     if (num < min || num > max) return nop; \
   } while (0)
 
-auto nop = [](const Position& from, Rule&) {
+auto nop = [](const Position& from, const Rule&) {
   return from;
 };
 

@@ -8,9 +8,8 @@ size_t Point::hash() const noexcept {
 }
 
 std::string Point::str() const {
-  return std::string("(")  +
-         std::to_string(x) + ", " +
-         std::to_string(y) + ")";
+  return std::string("(") + std::to_string(x) + ", "
+      + std::to_string(y) + ")";
 }
 
 int Point::getX() const {

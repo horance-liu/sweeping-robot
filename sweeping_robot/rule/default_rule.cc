@@ -2,8 +2,8 @@
 #include "sweeping_robot/listener/listener.h"
 #include "sweeping_robot/core/position.h"
 
-DefaultRule::DefaultRule(std::vector<Listener*> listeners) :
-    listeners(std::move(listeners)) {
+DefaultRule::DefaultRule(std::vector<Listener*> listeners)
+  : listeners(std::move(listeners)) {
 }
 
 DefaultRule::~DefaultRule() {
@@ -12,7 +12,7 @@ DefaultRule::~DefaultRule() {
   }
 }
 
-const Position& DefaultRule::apply(const Position& to) {
+const Position& DefaultRule::apply(const Position& to) const {
   for (auto listener : listeners) {
     listener->onChanged(to.getPoint());
   }

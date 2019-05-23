@@ -8,8 +8,7 @@ struct Point;
 
 DEF_INTERFACE(ActionDescribing) {
   ABSTRACT(std::string text(const Point&) const);
-  ABSTRACT(std::string desc() const);
+  ABSTRACT(const char* desc() const);
 };
-
 
 #endif

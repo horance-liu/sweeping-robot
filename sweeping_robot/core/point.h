@@ -23,12 +23,6 @@ private:
   int x, y;
 };
 
-#include <ostream>
-
-std::ostream& operator<<(std::ostream& out, const Point& p) {
-  return out << p.str();
-}
-
 namespace std {
 template<>
 struct hash<Point> {

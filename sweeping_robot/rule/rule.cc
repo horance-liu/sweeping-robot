@@ -2,13 +2,13 @@
 
 namespace {
 struct NilRule : Rule {
-  OVERRIDE(const Position& apply(const Position& to)) {
+  OVERRIDE(const Position& apply(const Position& to) const) {
     return to;
   }
 };
 } // end namespace
 
-Rule& Rule::nil() {
+const Rule& Rule::nil() {
   static NilRule inst;
   return inst;
 }

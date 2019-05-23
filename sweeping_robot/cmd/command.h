@@ -7,7 +7,7 @@
 struct Rule;
 struct Position;
 
-using Command = std::function<Position(const Position&, Rule&)>;
+using Command = std::function<Position(const Position&, const Rule&)>;
 
 Command left();
 Command right();

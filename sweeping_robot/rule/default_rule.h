@@ -11,7 +11,7 @@ struct DefaultRule : Rule {
   ~DefaultRule();
 
 private:
-  OVERRIDE(const Position& apply(const Position& to));
+  OVERRIDE(const Position& apply(const Position& to) const);
 
 private:
   std::vector<Listener*> listeners;

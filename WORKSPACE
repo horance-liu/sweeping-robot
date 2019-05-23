@@ -23,11 +23,3 @@ http_archive(
     ],  
 )
 
-http_archive(
-    name = "github_com_nlohmann_json",
-    sha256 = "69cc88207ce91347ea530b227ff0776db82dcb8de6704e1a3d74f4841bc651cf",
-    urls = [ 
-        "https://github.com/nlohmann/json/releases/download/v3.6.1/include.zip",
-    ],
-    build_file = "//third_party:nlohmann_json.BUILD",
-)

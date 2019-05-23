@@ -6,8 +6,8 @@
 struct Position;
 
 DEF_INTERFACE(Rule) {
-  ABSTRACT(const Position& apply(const Position& to));
-  static Rule& nil();
+  ABSTRACT(const Position& apply(const Position& to) const);
+  static const Rule& nil();
 };
 
 #endif

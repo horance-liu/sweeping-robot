@@ -1,7 +1,14 @@
-#include "sweeping_robot/sweeping_robot.h"
+#include "sweeping_robot/core/sweeping_robot.h"
+#include "sweeping_robot/rule/default_rule.h"
+#include "sweeping_robot/listener/staying_listener.h"
+#include "sweeping_robot/listener/path_listener.h"
+#include "sweeping_robot/out/text_output.h"
+#include "sweeping_robot/out/json_output.h"
+#include "cub/string/str_printf.h"
 #include "cut/cut.hpp"
 
 using namespace cum;
+using namespace std::string_literals;
 
 FIXTURE(NoActionTest) {
   SweepingRobot robot;
@@ -173,69 +180,90 @@ FIXTURE(NoActionTest) {
   }
 };
 
-#include "sweeping_robot/rule/default_rule.h"
-#include "sweeping_robot/listener/staying_listener.h"
-#include "sweeping_robot/out/text_output.h"
+namespace {
+  std::string expertedTextAlert(const Point& p) {
+    return "Alert for passing " + p.str() + " repeatly\n";
+  }
 
-using namespace std::string_literals;
+  std::string expertedTextClean(const Point& p) {
+    return "Execute cleaning at " + p.str() + "\n";
+  }
+
+  std::string expertedJson(const char* action, const Point& p) {
+    return cub::stringprintf(
+R"({
+    "action": "%s",
+    "position": {
+        "x": %d,
+        "y": %d
+    }
+})", action, p.getX(), p.getY());
+  }
+
+  std::string expertedJsonAlert(const Point& p) {
+    return expertedJson("alert", p);
+  }
+
+  std::string expertedJsonClean(const Point& p) {
+    return expertedJson("clean", p);
+  }
+}  // end namespace
 
 FIXTURE(TextAlertTest) {
   std::stringstream ss;
 
   DefaultRule rule{{
-    new StayingListener(5, new TextOutput(ss)),
+    new StayingListener(4, new TextOutput(ss)),
   }};
 
   SweepingRobot robot{rule};
 
-  TEST("robot turns left 5 times, then reports alert") {
+  TEST("report alert on overflow") {
+    robot.exec(repeat(left(), 4));
+    ASSERT_THAT(ss.str(), eq(expertedTextAlert({0, 0})));
+  }
+
+  TEST("report alert only once") {
     robot.exec(repeat(left(), 5));
-    ASSERT_THAT(ss.str(), eq("Alert for passing (0, 0) repeatly\n"s));
+    ASSERT_THAT(ss.str(), eq(expertedTextAlert({0, 0})));
   }
 
-  TEST("robot alert only once") {
-    robot.exec(repeat(left(), 6));
-    ASSERT_THAT(ss.str(), eq("Alert for passing (0, 0) repeatly\n"s));
-  }
+  TEST("report two alerts on overflow with 2 times") {
+    auto expected = expertedTextAlert({0, 0}) +
+                    expertedTextAlert({0, 0});
 
-  TEST("report one alert per one overflow") {
-    std::string expected =
-        "Alert for passing (0, 0) repeatly\n"
-        "Alert for passing (0, 0) repeatly\n";
-
-    robot.exec(repeat(left(), 10));
+    robot.exec(repeat(left(), 2 * 4));
     ASSERT_THAT(ss.str(), eq(expected));
   }
 };
-
-#include "sweeping_robot/out/json_output.h"
 
 FIXTURE(JsonAlertTest) {
   std::stringstream ss;
 
   DefaultRule rule{{
-    new StayingListener(5, new JsonOutput(ss)),
+    new StayingListener(4, new JsonOutput(ss)),
   }};
 
   SweepingRobot robot{rule};
 
-  TEST("robot turns left 5 times, then reports alert") {
-    std::string expected =
-R"({
-    "action": "alert",
-    "position": {
-        "x": 0,
-        "y": 0
-    }
-})";
-
+  TEST("robot turns left 4 times, then reports alert") {
     robot.exec(repeat(left(), 5));
+    ASSERT_THAT(ss.str(), eq(expertedJsonAlert({0, 0})));
+  }
+
+  TEST("report alert only once") {
+    robot.exec(repeat(left(), 5));
+    ASSERT_THAT(ss.str(), eq(expertedJsonAlert({0, 0})));
+  }
+
+  TEST("report two alerts on overflow with 2 times") {
+    auto expected = expertedJsonAlert({0, 0}) +
+                    expertedJsonAlert({0, 0});
+
+    robot.exec(repeat(left(), 2 * 4));
     ASSERT_THAT(ss.str(), eq(expected));
   }
 };
-
-#include "sweeping_robot/listener/path_listener.h"
-#include "sweeping_robot/out/text_output.h"
 
 FIXTURE(TextCleanTest) {
   std::stringstream ss;
@@ -248,13 +276,12 @@ FIXTURE(TextCleanTest) {
 
   TEST("robot pass points set, then execute clean action") {
     robot.exec(forward());
-    ASSERT_THAT(ss.str(), eq("Execute cleaning at (0, 1)\n"s));
+    ASSERT_THAT(ss.str(), eq(expertedTextClean({0, 1})));
   }
 
   TEST("robot pass points set, then execute clean action") {
-    std::string expected =
-        "Execute cleaning at (0, 1)\n"
-        "Execute cleaning at (0, 3)\n";
+    auto expected = expertedTextClean({0, 1}) +
+                    expertedTextClean({0, 3});
 
     robot.exec(forward(3));
     ASSERT_THAT(ss.str(), eq(expected));
@@ -262,7 +289,35 @@ FIXTURE(TextCleanTest) {
 
   TEST("robot clean point only once") {
     robot.exec(sequential({forward(), backward()}));
-    ASSERT_THAT(ss.str(), eq("Execute cleaning at (0, 1)\n"s));
+    ASSERT_THAT(ss.str(), eq(expertedTextClean({0, 1})));
+  }
+};
+
+FIXTURE(JsonCleanTest) {
+  std::stringstream ss;
+
+  DefaultRule rule{{
+    new PathListener({{0, 1}, {0, 3}}, new JsonOutput(ss))
+  }};
+
+  SweepingRobot robot{rule};
+
+  TEST("execute clean action when robot passes points set") {
+    robot.exec(forward());
+    ASSERT_THAT(ss.str(), eq(expertedJsonClean({0, 1})));
+  }
+
+  TEST("robot pass points set, then execute clean action") {
+    auto expected = expertedJsonClean({0, 1}) +
+                    expertedJsonClean({0, 3});
+
+    robot.exec(forward(3));
+    ASSERT_THAT(ss.str(), eq(expected));
+  }
+
+  TEST("robot clean point only once") {
+    robot.exec(sequential({forward(), backward()}));
+    ASSERT_THAT(ss.str(), eq(expertedJsonClean({0, 1})));
   }
 };
 
@@ -277,20 +332,10 @@ FIXTURE(MultiActionTest) {
 
   SweepingRobot robot{rule};
 
-  TEST("robot pass points set, then execute clean action") {
+  TEST("robot register 2 listeners") {
     robot.exec(sequential({repeat(left(), 5), forward()}));
-
-    std::string s1Expected =
-R"({
-    "action": "alert",
-    "position": {
-        "x": 0,
-        "y": 0
-    }
-})";
-
-    ASSERT_THAT(s1.str(), eq(s1Expected));
-    ASSERT_THAT(s2.str(), eq("Execute cleaning at (-1, 0)\n"s));
+    ASSERT_THAT(s1.str(), eq(expertedJsonAlert({0, 0})));
+    ASSERT_THAT(s2.str(), eq(expertedTextClean({-1, 0})));
   }
 };
 

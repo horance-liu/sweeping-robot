@@ -1,6 +1,6 @@
-#include "sweeping_robot/sweeping_robot.h"
+#include "sweeping_robot/core/sweeping_robot.h"
 
-SweepingRobot::SweepingRobot(Rule& rule)
+SweepingRobot::SweepingRobot(const Rule& rule)
   : rule(rule), pos(0, 0, Direction::N) {
 }
 
