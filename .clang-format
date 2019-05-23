@@ -18,4 +18,4 @@ AllowShortIfStatementsOnASingleLine: false
 AllowShortLoopsOnASingleLine: false
 ConstructorInitializerIndentWidth: 2
 IndentWidth: 2
-ColumnLimit: 85 
+ColumnLimit: 80 
