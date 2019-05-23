@@ -43,13 +43,20 @@ Listener* all(Listeners listeners) {
 }
 
 namespace {
-struct AlertAction : private ActionDescribing {
-  AlertAction(Output out) : out(std::move(out)) {
+struct Action : protected ActionDescribing {
+  Action(Output out) : out(std::move(out)) {
   }
 
-  void report(const Point& to) const {
+  void process(const Point& to) const {
     out(to, *this);
   }
+
+private:
+  Output out;
+};
+
+struct AlertAction : Action {
+  using Action::Action;
 
 private:
   OVERRIDE(std::string text(const Point& to) const) {
@@ -59,9 +66,6 @@ private:
   OVERRIDE(const char* desc() const) {
     return "alert";
   }
-
-private:
-  Output out;
 };
 
 struct StayingListener : Listener {
@@ -72,7 +76,7 @@ struct StayingListener : Listener {
   void onChanged(const Point& to) {
     cache[to] += 1;
     if (overflow(to)) {
-      action.report(to);
+      action.process(to);
       cache.erase(to);
     }
   }
@@ -94,13 +98,8 @@ Listener* stay(int limit, Output out) {
 }
 
 namespace {
-struct CleanAction : private ActionDescribing {
-  CleanAction(Output out) : out(std::move(out)) {
-  }
-
-  void clean(const Point& to) const {
-    out(to, *this);
-  }
+struct CleanAction : Action {
+  using Action::Action;
 
 private:
   OVERRIDE(std::string text(const Point& to) const) {
@@ -110,9 +109,6 @@ private:
   OVERRIDE(const char* desc() const) {
     return "clean";
   }
-
-private:
-  Output out;
 };
 
 struct PathListener : Listener {
@@ -124,7 +120,7 @@ private:
   OVERRIDE(void onChanged(const Point& to)) {
     auto iter = std::find(points.cbegin(), points.cend(), to);
     if (iter != points.cend()) {
-      action.clean(to);
+      action.process(to);
       points.erase(iter);
     }
   }
