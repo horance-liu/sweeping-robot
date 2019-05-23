@@ -68,8 +68,8 @@ private:
   }
 };
 
-struct StayingListener : Listener {
-  StayingListener(int limit, Output out)
+struct StayListener : Listener {
+  StayListener(int limit, Output out)
     : limit(limit), action(std::move(out)) {
   }
 
@@ -94,7 +94,7 @@ private:
 } // end namespace
 
 Listener* stay(int limit, Output out) {
-  return new StayingListener(limit, std::move(out));
+  return new StayListener(limit, std::move(out));
 }
 
 namespace {
