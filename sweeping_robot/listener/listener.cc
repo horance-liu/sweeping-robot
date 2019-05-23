@@ -1,6 +1,5 @@
 #include "sweeping_robot/listener/listener.h"
-#include "sweeping_robot/action/clean_action.h"
-#include "sweeping_robot/action/alert_action.h"
+#include "sweeping_robot/listener/action_describing.h"
 #include "sweeping_robot/core/point.h"
 #include <unordered_map>
 
@@ -44,6 +43,27 @@ Listener* all(Listeners listeners) {
 }
 
 namespace {
+struct AlertAction : private ActionDescribing {
+  AlertAction(Output out) : out(std::move(out)) {
+  }
+
+  void report(const Point& to) const {
+    out(to, *this);
+  }
+
+private:
+  OVERRIDE(std::string text(const Point& to) const) {
+    return std::string("Alert for passing ") + to.str() + " repeatly\n";
+  }
+
+  OVERRIDE(const char* desc() const) {
+    return "alert";
+  }
+
+private:
+  Output out;
+};
+
 struct StayingListener : Listener {
   StayingListener(int limit, Output out)
     : limit(limit), action(std::move(out)) {
@@ -74,6 +94,27 @@ Listener* stay(int limit, Output out) {
 }
 
 namespace {
+struct CleanAction : private ActionDescribing {
+  CleanAction(Output out) : out(std::move(out)) {
+  }
+
+  void clean(const Point& to) const {
+    out(to, *this);
+  }
+
+private:
+  OVERRIDE(std::string text(const Point& to) const) {
+    return std::string("Execute cleaning at ") + to.str() + "\n";
+  }
+
+  OVERRIDE(const char* desc() const) {
+    return "clean";
+  }
+
+private:
+  Output out;
+};
+
 struct PathListener : Listener {
   PathListener(Points points, Output out)
     : points(std::move(points)), action(std::move(out)) {

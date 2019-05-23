@@ -5,13 +5,20 @@ package(
 )
 
 cc_library(
+    name = "action_describing",
+    hdrs = ["action_describing.h"],
+    deps = [
+        "@github_com_horanceliu_cub//cub/base:keywords",
+    ],
+)
+
+cc_library(
     name = "listener",
     hdrs = ["listener.h"],
     srcs = ["listener.cc"],
     deps = [
+        ":action_describing",
+        "//sweeping_robot/out",
         "//sweeping_robot/core:point",
-        "//sweeping_robot/action:alert_action",
-        "//sweeping_robot/action:clean_action",
-        "@github_com_horanceliu_cub//cub/base:keywords",
     ],
 )
