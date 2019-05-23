@@ -3,7 +3,7 @@
 
 using namespace cum;
 
-FIXTURE(SweepingRobotTest) {
+FIXTURE(NilRuleTest) {
   SweepingRobot robot;
 
   TEST("at beginning, the robot is at (0, 0, N)") {
@@ -169,6 +169,17 @@ FIXTURE(SweepingRobotTest) {
 
   TEST("repeat(left(), 11): out of bound") {
     robot.exec(repeat(left(), 11));
+    ASSERT_EQ(Position(0, 0, Direction::N), robot.position());
+  }
+};
+
+#include "sweeping_robot/rule/default_rule.h"
+
+FIXTURE(NilRuleTest) {
+  DefaultRule rule;
+  SweepingRobot robot(rule);
+
+  TEST("at beginning, the robot is at (0, 0, N)") {
     ASSERT_EQ(Position(0, 0, Direction::N), robot.position());
   }
 };
