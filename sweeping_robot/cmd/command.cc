@@ -1,12 +1,14 @@
 #include "sweeping_robot/cmd/command.h"
 #include "sweeping_robot/core/position.h"
-#include "sweeping_robot/rule/rule.h"
+#include "sweeping_robot/listener/listener.h"
 #include "cub/algo/range.h"
 
 namespace {
 Command turn(bool left) {
-  return [left](auto& from, auto& rule) {
-    return rule.apply(from.turn(left));
+  return [left](auto& from, auto& listener) {
+    auto to = from.turn(left);
+    listener.onChanged(to.getPoint());
+    return to;
   };
 }
 }  // namespace
@@ -21,8 +23,10 @@ Command right() {
 
 namespace {
 Command move(bool forward) {
-  return [forward](auto& from, auto& rule) {
-    return rule.apply(from.move(forward));
+  return [forward](auto& from, auto& listener) {
+    auto to = from.move(forward);
+    listener.onChanged(to.getPoint());
+    return to;
   };
 }
 }  // namespace
@@ -53,7 +57,7 @@ namespace {
     if (num < min || num > max) return nop; \
   } while (0)
 
-auto nop = [](const Position& from, const Rule&) {
+auto nop = [](const Position& from, Listener&) {
   return from;
 };
 
@@ -67,9 +71,9 @@ Command repeat(Command cmd, int n) {
 }
 
 Command sequential(std::vector<Command> cmds) {
-  return [cmds = std::move(cmds)](auto& from, auto& rule) {
-    return cub::reduce(cmds, from, [&rule](auto& pos, auto& cmd) {
-      pos = cmd(pos, rule);
+  return [cmds = std::move(cmds)](auto& from, auto& listener) {
+    return cub::reduce(cmds, from, [&listener](auto& pos, auto& cmd) {
+      pos = cmd(pos, listener);
     });
   };
 }

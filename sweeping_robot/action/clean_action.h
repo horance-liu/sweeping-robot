@@ -16,5 +16,4 @@ private:
   Output out;
 };
 
-
 #endif

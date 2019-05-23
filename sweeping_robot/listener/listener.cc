@@ -5,28 +5,42 @@
 #include <unordered_map>
 
 namespace {
-struct PathListener : Listener {
-  PathListener(Points points, Output out)
-    : points(std::move(points)), action(std::move(out)) {
+struct NilListener : Listener {
+  OVERRIDE(void onChanged(const Point& to)) {
+  }
+};
+} // end namespace
+
+Listener* nil() {
+  return new NilListener;
+}
+
+namespace {
+struct ListenerList : Listener {
+  ListenerList(Listeners listeners)
+    : listeners(std::move(listeners)) {
   }
 
-private:
-  OVERRIDE(void onChanged(const Point& to)) {
-    auto iter = std::find(points.cbegin(), points.cend(), to);
-    if (iter != points.cend()) {
-      action.clean(to);
-      points.erase(iter);
+  ~ListenerList() {
+    for (auto listener : listeners) {
+      delete listener;
     }
   }
 
 private:
-  Points points;
-  CleanAction action;
+  OVERRIDE(void onChanged(const Point& to)) {
+    for (auto listener : listeners) {
+      listener->onChanged(to);
+    }
+  }
+
+private:
+  Listeners listeners;
 };
 } // end namespace
 
-Listener* path(Points points, Output out) {
-  return new PathListener(std::move(points), std::move(out));
+Listener* all(Listeners listeners) {
+  return new ListenerList(std::move(listeners));
 }
 
 namespace {
@@ -57,4 +71,29 @@ private:
 
 Listener* stay(int limit, Output out) {
   return new StayingListener(limit, std::move(out));
+}
+
+namespace {
+struct PathListener : Listener {
+  PathListener(Points points, Output out)
+    : points(std::move(points)), action(std::move(out)) {
+  }
+
+private:
+  OVERRIDE(void onChanged(const Point& to)) {
+    auto iter = std::find(points.cbegin(), points.cend(), to);
+    if (iter != points.cend()) {
+      action.clean(to);
+      points.erase(iter);
+    }
+  }
+
+private:
+  Points points;
+  CleanAction action;
+};
+} // end namespace
+
+Listener* path(Points points, Output out) {
+  return new PathListener(std::move(points), std::move(out));
 }

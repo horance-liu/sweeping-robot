@@ -1,5 +1,4 @@
 #include "sweeping_robot/core/sweeping_robot.h"
-#include "sweeping_robot/rule/default_rule.h"
 #include "sweeping_robot/listener/listener.h"
 #include "sweeping_robot/out/output.h"
 #include "cub/string/str_printf.h"
@@ -210,11 +209,8 @@ R"({
 FIXTURE(TextAlertTest) {
   std::stringstream ss;
 
-  DefaultRule rule{{
-    stay(4, text(ss)),
-  }};
-
-  SweepingRobot robot{rule};
+  Listener* listener = stay(4, to_text(ss));
+  SweepingRobot robot{listener};
 
   TEST("report alert on overflow") {
     robot.exec(repeat(left(), 4));
@@ -238,11 +234,8 @@ FIXTURE(TextAlertTest) {
 FIXTURE(JsonAlertTest) {
   std::stringstream ss;
 
-  DefaultRule rule{{
-    stay(4, json(ss)),
-  }};
-
-  SweepingRobot robot{rule};
+  Listener* listener = stay(4, to_json(ss));
+  SweepingRobot robot{listener};
 
   TEST("robot turns left 4 times, then reports alert") {
     robot.exec(repeat(left(), 5));
@@ -266,11 +259,8 @@ FIXTURE(JsonAlertTest) {
 FIXTURE(TextCleanTest) {
   std::stringstream ss;
 
-  DefaultRule rule{{
-    path({{0, 1}, {0, 3}}, text(ss))
-  }};
-
-  SweepingRobot robot{rule};
+  Listener* listener = path({{0, 1}, {0, 3}}, to_text(ss));
+  SweepingRobot robot{listener};
 
   TEST("robot pass points set, then execute clean action") {
     robot.exec(forward());
@@ -294,11 +284,8 @@ FIXTURE(TextCleanTest) {
 FIXTURE(JsonCleanTest) {
   std::stringstream ss;
 
-  DefaultRule rule{{
-    path({{0, 1}, {0, 3}}, json(ss))
-  }};
-
-  SweepingRobot robot{rule};
+  Listener* listener = path({{0, 1}, {0, 3}}, to_json(ss));
+  SweepingRobot robot{listener};
 
   TEST("execute clean action when robot passes points set") {
     robot.exec(forward());
@@ -323,12 +310,12 @@ FIXTURE(MultiActionTest) {
   std::stringstream s1;
   std::stringstream s2;
 
-  DefaultRule rule{{
-    stay(5, json(s1)),
-    path({{-1, 0}, {0, 3}}, text(s2))
-  }};
+  Listener* listener = all({
+    stay(5, to_json(s1)),
+    path({{-1, 0}, {0, 3}}, to_text(s2))
+  });
 
-  SweepingRobot robot{rule};
+  SweepingRobot robot{listener};
 
   TEST("robot register 2 listeners") {
     robot.exec(sequential({repeat(left(), 5), forward()}));

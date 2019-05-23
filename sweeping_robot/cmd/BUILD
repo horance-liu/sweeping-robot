@@ -9,7 +9,7 @@ cc_library(
     hdrs = ["command.h"],
     srcs = ["command.cc"],
     deps = [
-        "//sweeping_robot/rule",
+        "//sweeping_robot/listener",
         "//sweeping_robot/core:position",
         "@github_com_horanceliu_cub//cub/algo:range",
     ],

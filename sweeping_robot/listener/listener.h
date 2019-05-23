@@ -3,15 +3,21 @@
 
 #include "cub/base/keywords.h"
 #include "sweeping_robot/out/output.h"
+
+#include <vector>
 #include <unordered_set>
 
 DEF_INTERFACE(Listener) {
   ABSTRACT(void onChanged(const Point&));
 };
 
+using Listeners = std::vector<Listener*>;
 using Points = std::unordered_set<Point>;
 
-Listener* path(Points points, Output out);
-Listener* stay(int limit, Output out);
+Listener* nil();
+Listener* all(Listeners);
+
+Listener* path(Points, Output);
+Listener* stay(int limit, Output);
 
 #endif

@@ -4,10 +4,10 @@
 #include <vector>
 #include <functional>
 
-struct Rule;
+struct Listener;
 struct Position;
 
-using Command = std::function<Position(const Position&, const Rule&)>;
+using Command = std::function<Position(const Position&, Listener&)>;
 
 Command left();
 Command right();

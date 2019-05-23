@@ -40,7 +40,6 @@ cc_library(
     deps = [
         ":position",
         "//sweeping_robot/cmd",
-        "//sweeping_robot/rule",
     ],
 )
 
@@ -51,7 +50,6 @@ cc_test(
         ":sweeping_robot",
         "//sweeping_robot/out",
         "//sweeping_robot/listener",
-        "//sweeping_robot/rule:default_rule",
         "@github_com_horanceliu_cub//cub/string:str_printf",
         "@github_com_horanceliu_cut//:cut",
         "@github_com_horanceliu_cut//:cut_main",

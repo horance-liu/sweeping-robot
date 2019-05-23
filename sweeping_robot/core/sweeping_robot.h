@@ -3,16 +3,17 @@
 
 #include "sweeping_robot/cmd/command.h"
 #include "sweeping_robot/core/position.h"
-#include "sweeping_robot/rule/rule.h"
+#include "sweeping_robot/listener/listener.h"
+#include <memory>
 
 struct SweepingRobot {
-  SweepingRobot(const Rule& = Rule::nil());
+  SweepingRobot(Listener* = nil());
 
   void exec(const Command&);
   const Position& position() const;
 
 private:
-  const Rule& rule;
+  std::unique_ptr<Listener> listener;
   Position pos;
 };
 
