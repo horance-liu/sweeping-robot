@@ -1,9 +1,7 @@
 #include "sweeping_robot/core/sweeping_robot.h"
 #include "sweeping_robot/rule/default_rule.h"
-#include "sweeping_robot/listener/staying_listener.h"
-#include "sweeping_robot/listener/path_listener.h"
-#include "sweeping_robot/out/text_output.h"
-#include "sweeping_robot/out/json_output.h"
+#include "sweeping_robot/listener/listener.h"
+#include "sweeping_robot/out/output.h"
 #include "cub/string/str_printf.h"
 #include "cut/cut.hpp"
 
@@ -213,7 +211,7 @@ FIXTURE(TextAlertTest) {
   std::stringstream ss;
 
   DefaultRule rule{{
-    new StayingListener(4, new TextOutput(ss)),
+    stay(4, text(ss)),
   }};
 
   SweepingRobot robot{rule};
@@ -241,7 +239,7 @@ FIXTURE(JsonAlertTest) {
   std::stringstream ss;
 
   DefaultRule rule{{
-    new StayingListener(4, new JsonOutput(ss)),
+    stay(4, json(ss)),
   }};
 
   SweepingRobot robot{rule};
@@ -269,7 +267,7 @@ FIXTURE(TextCleanTest) {
   std::stringstream ss;
 
   DefaultRule rule{{
-    new PathListener({{0, 1}, {0, 3}}, new TextOutput(ss))
+    path({{0, 1}, {0, 3}}, text(ss))
   }};
 
   SweepingRobot robot{rule};
@@ -297,7 +295,7 @@ FIXTURE(JsonCleanTest) {
   std::stringstream ss;
 
   DefaultRule rule{{
-    new PathListener({{0, 1}, {0, 3}}, new JsonOutput(ss))
+    path({{0, 1}, {0, 3}}, json(ss))
   }};
 
   SweepingRobot robot{rule};
@@ -326,8 +324,8 @@ FIXTURE(MultiActionTest) {
   std::stringstream s2;
 
   DefaultRule rule{{
-    new StayingListener(5, new JsonOutput(s1)),
-    new PathListener({{-1, 0}, {0, 3}}, new TextOutput(s2))
+    stay(5, json(s1)),
+    path({{-1, 0}, {0, 3}}, text(s2))
   }};
 
   SweepingRobot robot{rule};

@@ -1,11 +1,11 @@
 #include "sweeping_robot/action/alert_action.h"
 #include "sweeping_robot/core/point.h"
 
-AlertAction::AlertAction(Output* out) : out(out) {
+AlertAction::AlertAction(Output out) : out(std::move(out)) {
 }
 
-void AlertAction::report(const Point& to) {
-  out->write(to, *this);
+void AlertAction::report(const Point& to) const {
+  out(to, *this);
 }
 
 std::string AlertAction::text(const Point& to) const {

@@ -3,20 +3,17 @@
 
 #include "sweeping_robot/action/action_describing.h"
 #include "sweeping_robot/out/output.h"
-#include <memory>
-
-struct Point;
 
 struct CleanAction : private ActionDescribing {
-  CleanAction(Output* out);
-  void clean(const Point&);
+  CleanAction(Output out);
+  void clean(const Point&) const;
 
 private:
   OVERRIDE(std::string text(const Point&) const);
   OVERRIDE(const char* desc() const);
 
 private:
-  std::unique_ptr<Output> out;
+  Output out;
 };
 
 
