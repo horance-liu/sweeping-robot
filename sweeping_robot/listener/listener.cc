@@ -118,8 +118,8 @@ struct PathListener : Listener {
 
 private:
   OVERRIDE(void onChanged(const Point& to)) {
-    auto iter = std::find(points.cbegin(), points.cend(), to);
-    if (iter != points.cend()) {
+    auto iter = points.find(to);
+    if (iter != points.end()) {
       action.process(to);
       points.erase(iter);
     }
